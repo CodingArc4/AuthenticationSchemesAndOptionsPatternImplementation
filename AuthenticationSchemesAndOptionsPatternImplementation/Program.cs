@@ -67,7 +67,8 @@ namespace AuthenticationSchemesAndOptionsPatternImplementation
 
             //swagger
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen(options => {
+            builder.Services.AddSwaggerGen(options =>
+            {
                 options.SwaggerDoc("v1", new OpenApiInfo { Title = "Authentication Scheme Task -  API", Version = "v1" });
                 options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
                 {
@@ -109,7 +110,10 @@ namespace AuthenticationSchemesAndOptionsPatternImplementation
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerUI(options =>
+                {
+                    options.DefaultModelsExpandDepth(-1);
+                });
             }
 
             app.UseHttpsRedirection();

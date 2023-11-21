@@ -69,12 +69,20 @@ namespace AuthenticationSchemesAndOptionsPatternImplementation.Controllers
             {
                 var user = await _userManager.FindByEmailAsync(loginViewModel.Email);
 
+
                 if (user != null)
                 {
+                    var userRoles = await _userManager.GetRolesAsync(user);
+
                     var claims = new List<Claim>
                     {
                         new Claim(ClaimTypes.Name, user.Email)
                     };
+
+                    foreach (var role in userRoles)
+                    {
+                        claims.Add(new Claim(ClaimTypes.Role, role));
+                    }
 
                     var claimsIdentity = new ClaimsIdentity(
                         claims, CookieAuthenticationDefaults.AuthenticationScheme);

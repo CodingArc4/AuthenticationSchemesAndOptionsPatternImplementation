@@ -9,7 +9,7 @@ namespace AuthenticationSchemesAndOptionsPatternImplementation.Controllers
     public class GenericController : ControllerBase
     {
         [HttpGet("GetByCookie")]
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetByCookie()
         {  
             return Ok("accessed by cookie.");
