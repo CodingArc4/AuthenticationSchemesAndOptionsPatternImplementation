@@ -43,7 +43,13 @@ namespace AuthenticationSchemesAndOptionsPatternImplementation
                 x.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 x.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             })
-            .AddCookie()
+            .AddCookie(options => {
+                options.Events.OnRedirectToLogin = (context) =>
+                {
+                    context.Response.StatusCode = 401;
+                    return Task.CompletedTask;
+                };
+            })
             .AddJwtBearer(x =>
             {
                 x.SaveToken = true;
@@ -90,9 +96,9 @@ namespace AuthenticationSchemesAndOptionsPatternImplementation
             });
 
             //options implementation
-            //builder.Services.Configure<ApplicationSettings>(
-            //builder.Configuration.GetSection(nameof(ApplicationSettings)));
-            builder.Services.ConfigureOptions<ApplicationSettingsSetup>();
+            builder.Services.Configure<ApplicationSettings>(
+            builder.Configuration.GetSection(nameof(ApplicationSettings)));
+            //builder.Services.ConfigureOptions<ApplicationSettingsSetup>();
 
             //jwt through options patteren
             builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(JwtSettings.SectionName));
