@@ -2,6 +2,6 @@
 {
     public class ApplicationSettings
     {
-        public string ExampleValue { get; init; } = string.Empty;
+        public string ExampleValue { get; set; } = string.Empty;
     }
 }

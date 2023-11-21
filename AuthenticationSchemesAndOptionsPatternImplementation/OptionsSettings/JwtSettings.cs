@@ -3,8 +3,8 @@
     public class JwtSettings
     {
         public const string SectionName = "JWT";
-        public string Token { get; init; } = null!;
-        public string ValidIssuer { get; init; } = null!;
-        public string ValidAudience { get; init; } = null!;
+        public string Token { get; set; } = null!;
+        public string ValidIssuer { get; set; } = null!;
+        public string ValidAudience { get; set; } = null!;
     }
 }
