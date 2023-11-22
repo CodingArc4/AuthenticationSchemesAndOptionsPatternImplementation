@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
 using System.Text;
 
@@ -39,11 +40,12 @@ namespace AuthenticationSchemesAndOptionsPatternImplementation
             //authentication config
             builder.Services.AddAuthentication(x =>
             {
-                x.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                x.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                x.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                x.DefaultAuthenticateScheme = "JWT_OR_COOKIE";
+                x.DefaultChallengeScheme = "JWT_OR_COOKIE";
+                x.DefaultScheme = "JWT_OR_COOKIE";
             })
-            .AddCookie(options => {
+            .AddCookie(options =>
+            {
                 options.Events.OnRedirectToLogin = (context) =>
                 {
                     context.Response.StatusCode = 401;
@@ -62,6 +64,20 @@ namespace AuthenticationSchemesAndOptionsPatternImplementation
                     ValidAudience = builder.Configuration["JWT:ValidAudience"],
                     IssuerSigningKey = new SymmetricSecurityKey(
                     Encoding.UTF8.GetBytes(builder.Configuration["JWT:Token"]))
+                };
+            })
+            .AddPolicyScheme("JWT_OR_COOKIE", JwtBearerDefaults.AuthenticationScheme, options =>
+            {
+                // runs on each request
+                options.ForwardDefaultSelector = context =>
+                {
+                    // filter by auth type
+                    string authorization = context.Request.Headers[HeaderNames.Authorization];
+                    if (!string.IsNullOrEmpty(authorization) && authorization.StartsWith("Bearer"))
+                        return JwtBearerDefaults.AuthenticationScheme;
+
+                    // otherwise always check for cookie auth
+                    return CookieAuthenticationDefaults.AuthenticationScheme;
                 };
             });
 
